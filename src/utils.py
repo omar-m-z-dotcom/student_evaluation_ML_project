@@ -9,6 +9,7 @@ from sklearn.metrics import r2_score
 import optuna
 from optuna.trial import Trial
 
+
 def save_model(model, model_path: str):
     """
     This function saves a given model to a specified path.
@@ -21,11 +22,12 @@ def save_model(model, model_path: str):
         CustomException: If there is an error during the execution of the function.
     """
     try:
-        with open(model_path, 'wb') as f:
+        with open(model_path, "wb") as f:
             pickle.dump(model, f)
     except Exception as e:
         logging.exception(e)
         raise CustomException(e)
+
 
 def load_model(model_path: str):
     """
@@ -41,13 +43,22 @@ def load_model(model_path: str):
         CustomException: If there is an error during the execution of the function.
     """
     try:
-        with open(model_path, 'rb') as f:
+        with open(model_path, "rb") as f:
             return pickle.load(f)
     except Exception as e:
         logging.exception(e)
         raise CustomException(e)
 
-def optimize_hyperparameters(model_class, x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray, y_test: np.ndarray, param_distributions: dict, n_trials=100):
+
+def optimize_hyperparameters(
+    model_class,
+    x_train: np.ndarray,
+    y_train: np.ndarray,
+    x_test: np.ndarray,
+    y_test: np.ndarray,
+    param_distributions: dict,
+    n_trials=100,
+):
     """
     This function performs hyperparameter optimization for a given model class using Optuna.
     It takes as input the model class, the training and test data, a dictionary of hyperparameter distributions,
@@ -72,6 +83,7 @@ def optimize_hyperparameters(model_class, x_train: np.ndarray, y_train: np.ndarr
     Returns:
         tuple: A tuple containing the best hyperparameters, the best score, and the best model.
     """
+
     def objective(trial: Trial) -> float:
         """
         This function is the objective function for the hyperparameter optimization
@@ -96,13 +108,25 @@ def optimize_hyperparameters(model_class, x_train: np.ndarray, y_train: np.ndarr
             params = {}
             for param_name, param_config in param_distributions.items():
                 param_type = param_config["type"]
-                
+
                 if param_type == "categorical":
-                    params[param_name] = trial.suggest_categorical(param_name, param_config["values"])
+                    params[param_name] = trial.suggest_categorical(
+                        param_name, param_config["values"]
+                    )
                 elif param_type == "int":
-                    params[param_name] = trial.suggest_int(param_name, param_config["low"], param_config["high"], step=param_config.get("step", 1))
+                    params[param_name] = trial.suggest_int(
+                        param_name,
+                        param_config["low"],
+                        param_config["high"],
+                        step=param_config.get("step", 1),
+                    )
                 elif param_type == "float":
-                    params[param_name] = trial.suggest_float(param_name, param_config["low"], param_config["high"], log=param_config.get("log", False))
+                    params[param_name] = trial.suggest_float(
+                        param_name,
+                        param_config["low"],
+                        param_config["high"],
+                        log=param_config.get("log", False),
+                    )
             logging.info(f"for model {model_class.__name__} Trying params: {params}")
             model = model_class(**params)
             model.fit(x_train, y_train)
@@ -126,7 +150,15 @@ def optimize_hyperparameters(model_class, x_train: np.ndarray, y_train: np.ndarr
         raise CustomException(e)
 
 
-def evaluate_models_with_tuning(x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray, y_test: np.ndarray, models: dict, param_spaces: dict, n_trials=50):
+def evaluate_models_with_tuning(
+    x_train: np.ndarray,
+    y_train: np.ndarray,
+    x_test: np.ndarray,
+    y_test: np.ndarray,
+    models: dict,
+    param_spaces: dict,
+    n_trials=50,
+):
     """
     Evaluate the performance of multiple models with hyperparameter tuning.
 
@@ -152,19 +184,21 @@ def evaluate_models_with_tuning(x_train: np.ndarray, y_train: np.ndarray, x_test
             if model_name in param_spaces:
                 logging.info(f"Optimizing hyperparameters for {model_name}...")
                 best_params, best_score, best_model = optimize_hyperparameters(
-                    model_class, 
-                    x_train, 
-                    y_train, 
-                    x_test, 
-                    y_test, 
+                    model_class,
+                    x_train,
+                    y_train,
+                    x_test,
+                    y_test,
                     param_spaces[model_name],
-                    n_trials
+                    n_trials,
                 )
                 y_train_pred = best_model.predict(x_train)
                 train_model_score = r2_score(y_train, y_train_pred)
-                
+
                 report[model_name] = (train_model_score, best_score, best_model)
-                logging.info(f"{model_name} - Best params: {best_params}, Test R2: {best_score}")
+                logging.info(
+                    f"{model_name} - Best params: {best_params}, Test R2: {best_score}"
+                )
             else:
                 # Fall back to default evaluation if no param space is provided
                 model = model_class()
@@ -174,7 +208,7 @@ def evaluate_models_with_tuning(x_train: np.ndarray, y_train: np.ndarray, x_test
                 train_model_score = r2_score(y_train, y_train_pred)
                 test_model_score = r2_score(y_test, y_test_pred)
                 report[model_name] = (train_model_score, test_model_score, model)
-                
+
         return report
     except Exception as e:
         logging.exception(e)
