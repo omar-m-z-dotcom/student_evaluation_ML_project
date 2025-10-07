@@ -2,7 +2,7 @@
 # import pandas as pd
 # import numpy as np
 import pickle
-from exception import CustomException
+from src.exception import CustomException
 from logger import logging
 import numpy as np
 from sklearn.metrics import r2_score
