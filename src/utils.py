@@ -3,7 +3,7 @@
 # import numpy as np
 import pickle
 from src.exception import CustomException
-from logger import logging
+from src.logger import logging
 import numpy as np
 from sklearn.metrics import r2_score
 import optuna
