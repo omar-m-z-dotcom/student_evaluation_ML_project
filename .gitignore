@@ -1,5 +1,6 @@
 # data folder
 *.csv
+*.mp4
 catboost_info/
 artifacts/*
 # Except for .pkl files in artifacts

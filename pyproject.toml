@@ -32,6 +32,5 @@ dev = [
 
 [tool.setuptools]
 include-package-data = true
-package-dir = {"" = "src"}
-packages = {find = {where = ["src"]}}
-py-modules = ["exception", "logger", "utils"] # List your standalone .py files here (without .py extension)
+# Let setuptools find everything
+packages = {find = {}}
