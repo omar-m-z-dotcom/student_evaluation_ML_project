@@ -1,8 +1,8 @@
 import os
-from exception import CustomException
-from logger import logging
+from src.exception import CustomException
+from src.logger import logging
 import numpy as np
-from utils import save_model, evaluate_models_with_tuning
+from src.utils import save_model, evaluate_models_with_tuning
 from dataclasses import dataclass
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor

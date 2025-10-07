@@ -1,7 +1,7 @@
 import os
-from exception import CustomException
-from logger import logging
-from utils import save_model
+from src.exception import CustomException
+from src.logger import logging
+from src.utils import save_model
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass

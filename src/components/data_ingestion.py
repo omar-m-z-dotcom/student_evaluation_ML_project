@@ -1,6 +1,6 @@
 import os
-from exception import CustomException
-from logger import logging
+from src.exception import CustomException
+from src.logger import logging
 import pandas as pd
 import kagglehub
 from sklearn.model_selection import train_test_split
