@@ -3,8 +3,8 @@ from src.exception import CustomException
 from src.utils import load_model
 from src.logger import logging
 from sklearn.compose import ColumnTransformer
-from components.data_transformation import DataTransformationConfig
-from components.model_trainer import ModelTrainerConfig
+from src.components.data_transformation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainerConfig
 
 
 class PredictPipeline:
